@@ -1,69 +1,142 @@
 require("dotenv").config();
 
+/** 1) Install & Set up mongoose */
 const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGO_URI,{ useNewUrlParser: true, useUnifiedTopology: true });
-const Schema=mongoose.Schema;
-
-const personSchema=new Schema({ 
-  name: {type:String, require:true},
-  age: Number,
-  favoriteFoods: [String]
-
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
-let Person=mongoose.model("Person",personSchema);
+/** 2) Create a 'Person' Model */
+const Schema = mongoose.Schema;
+const personSchema = new Schema({
+  name: { type: String, require: true },
+  age: Number,
+  favoriteFoods: [String],
+});
+
+/** 3) Create and Save a Person */
+let Person = mongoose.model("Person", personSchema);
 
 const createAndSavePerson = (done) => {
-  var HuyTran=new Person({name:"Huy Tran",age:21,favoriteFoods:["Bun_thit_nuong","Beefsteak"]});
-  
-  HuyTran.save((err,data) => {
-    if (error) return done(error);
-    done(null, data);    
-  });  
+  var HuyTran = new Person({
+    name: "Huy Tran",
+    age: 21,
+    favoriteFoods: ["Bun_thit_nuong", "Beefsteak"],
+  });
+
+  HuyTran.save((err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+/** 4) Create many People with `Model.create()` */
+var arrayOfPeople = [
+  {
+    name: "Jogn",
+    age: 19,
+    favoriteFoods: ["Pizza"],
+  },
+  {
+    name: "Alice",
+    age: 23,
+    favoriteFoods: ["Pancake"],
+  },
+  {
+    name: "Anna",
+    age: 20,
+    favoriteFoods: ["Rice"],
+  },
+];
 const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+  Person.create(arrayOfPeople, (err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+/** 5) Use model.find() to Search Your Database */
 const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+  Person.find({ name: personName }, (err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+// 6) Use model.findOne() to Return a Single Matching Document from Your Database
 const findOneByFood = (food, done) => {
-  done(null /*, data*/);
+  Person.findOne({ favoriteFoods: food }, (err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+// 7)Use model.findById() to Search Your Database By _id
 const findPersonById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findById(personId, (err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+// 8)Perform Classic Updates by Running Find, Edit, then Save
 const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
 
-  done(null /*, data*/);
-};
+  Person.findById(personId, (err, person) => {
+    if (err) return console.log(err);
 
+    person.favoriteFoods.push(foodToAdd);
+
+    person.save((err, data) => {
+      if (err) return console.error(err);
+      done(null, data);
+    });
+  });
+};
+{
+}
+
+// 9)Perform New Updates on a Document Using model.findOneAndUpdate()
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
-
-  done(null /*, data*/);
+  Person.findOneAndUpdate(
+    { name: personName },
+    { age: ageToSet },
+    { new: true },
+    (err, data) => {
+      if (err) return console.error(err);
+      done(null, data);
+    },
+  );
 };
 
+// 10)Delete One Document Using model.findByIdAndRemove
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findByIdAndRemove(personId, (err, data) =>{
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+// 11)Delete Many Documents with model.remove()
 const removeManyPeople = (done) => {
   const nameToRemove = "Mary";
-
-  done(null /*, data*/);
+  Person.remove({ name: nameToRemove }, (err, data) =>{
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+// 12)Chain Search Query Helpers to Narrow Search Results
 const queryChain = (done) => {
   const foodToSearch = "burrito";
-
-  done(null /*, data*/);
+  var findQuery=Person.find({favoriteFoods: foodToSearch}).sort({name: 1}).limit(2).select({age: 0});
+  findQuery.exec((err, data) =>{
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
 /** **Well Done !!**
