@@ -30,7 +30,7 @@ const createAndSavePerson = (done) => {
     done(null, data);
   });// .save() dont allow callback function anymore in mongoose
 
-  // try to use .save().then((date)=>{...}).catch((err)=>{ if (err) ...}); instead
+  // try to use .save().then((data)=>{...}).catch((err)=>{ if (err) ...}); instead
 };
 
 /** 4) Create many People with `Model.create()` */
