@@ -28,7 +28,9 @@ const createAndSavePerson = (done) => {
   HuyTran.save((err, data) => {
     if (err) return console.error(err);
     done(null, data);
-  });
+  });// .save() dont allow callback function anymore in mongoose
+
+  // try to use .save().then((date)=>{...}).catch((err)=>{ if (err) ...}); instead
 };
 
 /** 4) Create many People with `Model.create()` */
@@ -60,7 +62,7 @@ const createManyPeople = (arrayOfPeople, done) => {
 const findPeopleByName = (personName, done) => {
   Person.find({ name: personName }, (err, data) => {
     if (err) return console.error(err);
-    done(null, data);
+    done(null, data); //you need to defind function 'done' in real project
   });
 };
 
